@@ -47,22 +47,58 @@ GIF compressed with [gifsicle](https://www.lcdf.org/gifsicle/).
 
 - **Rendering approach:** Instead of a templating engine, I render HTML with plain template-literal functions in `views.js` (a shared `layout()` plus `renderHome`, `renderDetail`, and `render404`). This keeps the project framework-free while staying organized.
 - **Image hosting:** A couple of official logo URLs (VS Code, MDN) were unreliable or hotlink-blocked, so I switched to stable CDN sources (SVGRepo and simpleicons.org).
-- **Data layer:** The "database" is currently an in-memory array in `data/tools.js`. Routes only ever touch it through the `tools` array and a `getToolBySlug()` helper, so wiring up a real database in Unit 2 should only require changing that one file.
+- **Data layer (Unit 2):** Pages are now rendered dynamically from a **PostgreSQL** database instead of a static array. Every request runs a live SQL query.
+
+### Database design
+
+A normalized two-table schema (`categories` ──< `tools`, one-to-many via a foreign key):
+
+```
+categories                 tools
+----------                 -----
+id    SERIAL PK            id          SERIAL PK
+slug  VARCHAR UNIQUE       slug        VARCHAR UNIQUE
+name  VARCHAR UNIQUE       name        VARCHAR
+                           category_id INTEGER  → categories(id)  (FK)
+                           price       VARCHAR
+                           platform    VARCHAR
+                           image       TEXT
+                           link        TEXT
+                           description TEXT
+                           created_at  TIMESTAMPTZ DEFAULT now()
+```
+
+Each page joins `tools` to `categories` so the category name comes back with every tool. Adding or editing a tool is now a single SQL `INSERT`/`UPDATE` (or an edit to the seed data + `npm run db:reset`) — no code changes required.
+
+### Project structure
+
+```
+config/database.js   # pg connection pool (reads .env; supports DATABASE_URL or PG* vars)
+config/reset.js      # drops, recreates, and seeds the tables  → npm run db:reset
+data/tools.js        # seed data (categories + tools)
+data/queries.js      # all SQL the app runs (getAllTools, getToolBySlug)
+views.js             # server-rendered HTML (layout, home, detail, 404, 500)
+server.js            # Express routes (async, DB-backed)
+```
 
 ### Running locally
 
 ```bash
+# 1. Install Postgres (macOS): brew install postgresql@16 && brew services start postgresql@16
+# 2. Create the database:      createdb listicle
+# 3. Configure connection:     cp .env.example .env   (then edit values)
 npm install
-npm start        # or: npm run dev  (auto-restarts on file changes)
+npm run db:reset   # create tables + seed data
+npm start          # or: npm run dev  (auto-restarts on file changes)
 ```
 
 Then open <http://localhost:3000>.
 
-| Route              | Description                    |
-| ------------------ | ------------------------------ |
-| `GET /`            | Home page — grid of all tools  |
-| `GET /tools/:slug` | Detail page for one tool       |
-| `*`                | Custom 404 page                |
+| Route              | Description                            |
+| ------------------ | -------------------------------------- |
+| `GET /`            | Home page — grid of all tools (DB query) |
+| `GET /tools/:slug` | Detail page for one tool (DB query)    |
+| `*`                | Custom 404 page                        |
 
 ## License
 

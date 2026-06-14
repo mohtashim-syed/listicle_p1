@@ -1,6 +1,17 @@
 // Server-side HTML rendering using template literals.
 // No frontend framework — just plain strings styled with Pico.css.
 
+// Format a timestamp from the database into a readable date.
+function formatDate(value) {
+  if (!value) return "—";
+  const d = new Date(value);
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 // Escape user/data values so they render safely as text.
 function esc(str = "") {
   return String(str)
@@ -87,11 +98,13 @@ export function renderDetail(tool) {
       </div>
       <table>
         <tbody>
+          <tr><th scope="row">ID</th><td>${esc(tool.id)}</td></tr>
           <tr><th scope="row">Category</th><td>${esc(tool.category)}</td></tr>
           <tr><th scope="row">Price</th><td>${esc(tool.price)}</td></tr>
           <tr><th scope="row">Platform</th><td>${esc(tool.platform)}</td></tr>
           <tr><th scope="row">Website</th><td><a href="${esc(tool.link)}" target="_blank" rel="noopener noreferrer">${esc(tool.link)}</a></td></tr>
           <tr><th scope="row">Slug</th><td><code>${esc(tool.slug)}</code></td></tr>
+          <tr><th scope="row">Added</th><td>${esc(formatDate(tool.created_at))}</td></tr>
         </tbody>
       </table>
     </article>`;
@@ -108,4 +121,16 @@ export function render404() {
       <a href="/" role="button">Return Home</a>
     </article>`;
   return layout({ title: "404 — Not Found", body });
+}
+
+// 500 page served when a database query (or other server error) fails.
+export function render500() {
+  const body = `    <article class="not-found">
+      <hgroup>
+        <h1>500 — Something Went Wrong</h1>
+        <p>We hit an error talking to the database. Please try again in a moment.</p>
+      </hgroup>
+      <a href="/" role="button">Return Home</a>
+    </article>`;
+  return layout({ title: "500 — Server Error", body });
 }

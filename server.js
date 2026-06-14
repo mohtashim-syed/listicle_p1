@@ -2,34 +2,49 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { tools, getToolBySlug } from "./data/tools.js";
-import { renderHome, renderDetail, render404 } from "./views.js";
+import { getAllTools, getToolBySlug } from "./data/queries.js";
+import { renderHome, renderDetail, render404, render500 } from "./views.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static assets (custom CSS, future JS/images) from /public.
+// Serve static assets (custom CSS, images) from /public.
 app.use(express.static(path.join(__dirname, "public")));
 
-// Home page — lists every tool.
-app.get("/", (req, res) => {
-  res.send(renderHome(tools));
+// Home page — lists every tool, queried live from Postgres.
+app.get("/", async (req, res, next) => {
+  try {
+    const tools = await getAllTools();
+    res.send(renderHome(tools));
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Detail page — one page per tool, e.g. /tools/vs-code
-app.get("/tools/:slug", (req, res) => {
-  const tool = getToolBySlug(req.params.slug);
-  if (!tool) {
-    return res.status(404).send(render404());
+app.get("/tools/:slug", async (req, res, next) => {
+  try {
+    const tool = await getToolBySlug(req.params.slug);
+    if (!tool) {
+      return res.status(404).send(render404());
+    }
+    res.send(renderDetail(tool));
+  } catch (err) {
+    next(err);
   }
-  res.send(renderDetail(tool));
 });
 
 // Catch-all 404 for any route that didn't match above.
 app.use((req, res) => {
   res.status(404).send(render404());
+});
+
+// Error handler — if a database query fails, show a friendly 500 page.
+app.use((err, req, res, next) => {
+  console.error("Request error:", err);
+  res.status(500).send(render500());
 });
 
 app.listen(PORT, () => {
