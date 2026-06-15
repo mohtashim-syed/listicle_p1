@@ -1,5 +1,5 @@
-// Seed data used by config/reset.js to populate the database.
-// This is NOT queried at runtime anymore — the app reads from Postgres.
+// Seed data used by reset.js to populate the database.
+// This is NOT queried at runtime — the app reads from Postgres (Render).
 // Categories are normalized into their own table; each tool references one
 // by its category slug.
 

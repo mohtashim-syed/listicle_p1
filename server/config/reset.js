@@ -1,11 +1,12 @@
 // Database reset script: drops, (re)creates, and seeds all tables.
 // Run with:  npm run db:reset
 //
-// This is what makes adding/updating items "10000x easier" — change the
-// arrays in data/tools.js and re-run this script to rebuild the database.
+// Point this at your Render database (DATABASE_URL in .env) to create and seed
+// the tables in the cloud. Changing the arrays in config/data.js and re-running
+// this is all it takes to update the app's content.
 
 import { pool } from "./database.js";
-import { categories, tools } from "../data/tools.js";
+import { categories, tools } from "./data.js";
 
 // Schema: a normalized two-table design.
 //   categories (1) ──< (many) tools

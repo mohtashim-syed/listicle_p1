@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Tools &amp; Resources</title>
+    <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/src/css/style.css" />
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li>
+            <a href="/" class="brand"><strong>🛠️ Dev Tools &amp; Resources</strong></a>
+          </li>
+        </ul>
+        <ul>
+          <li><a href="/">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <hgroup>
+        <h1>Developer Tools &amp; Resources</h1>
+        <p>A hand-picked collection of tools every developer should have in their kit. Click any card for full details.</p>
+      </hgroup>
+
+      <!-- Populated by src/index.js from the /api/tools endpoint. -->
+      <section id="tool-grid" class="tool-grid" aria-busy="true"></section>
+    </main>
+
+    <footer class="container">
+      <small>Built with Express &amp; Pico.css · Data served live from a Render PostgreSQL database.</small>
+    </footer>
+
+    <script type="module" src="/src/index.js"></script>
+  </body>
+</html>

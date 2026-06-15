@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tool Details · Dev Tools</title>
+    <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/src/css/style.css" />
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li>
+            <a href="/" class="brand"><strong>🛠️ Dev Tools &amp; Resources</strong></a>
+          </li>
+        </ul>
+        <ul>
+          <li><a href="/">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <p><a href="/">&larr; Back to all tools</a></p>
+      <!-- Populated by src/detail.js from the /api/tools/:slug endpoint. -->
+      <div id="detail" aria-busy="true"></div>
+    </main>
+
+    <footer class="container">
+      <small>Built with Express &amp; Pico.css · Data served live from a Render PostgreSQL database.</small>
+    </footer>
+
+    <script type="module" src="/src/detail.js"></script>
+  </body>
+</html>

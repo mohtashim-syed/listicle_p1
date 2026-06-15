@@ -45,9 +45,9 @@ GIF compressed with [gifsicle](https://www.lcdf.org/gifsicle/).
 
 ## Notes
 
-- **Rendering approach:** Instead of a templating engine, I render HTML with plain template-literal functions in `views.js` (a shared `layout()` plus `renderHome`, `renderDetail`, and `render404`). This keeps the project framework-free while staying organized.
+- **Architecture:** The app is split into a `client/` frontend and a `server/` backend. The backend is an Express server that exposes a **JSON API** and queries a **Render-hosted PostgreSQL** database; the frontend is plain HTML/CSS/JS that `fetch`es from that API and renders the page in the browser — no frontend framework.
 - **Image hosting:** A couple of official logo URLs (VS Code, MDN) were unreliable or hotlink-blocked, so I switched to stable CDN sources (SVGRepo and simpleicons.org).
-- **Data layer (Unit 2):** Pages are now rendered dynamically from a **PostgreSQL** database instead of a static array. Every request runs a live SQL query.
+- **Why a JSON API:** Separating data (API) from presentation (client) keeps the frontend framework-free while making the data reusable; the detail page just fetches `/api/tools/:slug`.
 
 ### Database design
 
@@ -68,37 +68,56 @@ name  VARCHAR UNIQUE       name        VARCHAR
                            created_at  TIMESTAMPTZ DEFAULT now()
 ```
 
-Each page joins `tools` to `categories` so the category name comes back with every tool. Adding or editing a tool is now a single SQL `INSERT`/`UPDATE` (or an edit to the seed data + `npm run db:reset`) — no code changes required.
+Each query joins `tools` to `categories` so the category name comes back with every tool. Adding or editing a tool is now a single SQL `INSERT`/`UPDATE` (or an edit to the seed data + `npm run db:reset`) — no code changes required.
 
 ### Project structure
 
 ```
-config/database.js   # pg connection pool (reads .env; supports DATABASE_URL or PG* vars)
-config/reset.js      # drops, recreates, and seeds the tables  → npm run db:reset
-data/tools.js        # seed data (categories + tools)
-data/queries.js      # all SQL the app runs (getAllTools, getToolBySlug)
-views.js             # server-rendered HTML (layout, home, detail, 404, 500)
-server.js            # Express routes (async, DB-backed)
+client/                       # FRONTEND — vanilla HTML/CSS/JS, no framework
+  index.html                  #   home page shell
+  detail.html                 #   detail page shell (one per tool via /tools/:slug)
+  404.html                    #   not-found page
+  src/
+    assets/favicon.svg        #   images / assets
+    css/style.css             #   styles (layered on Pico.css)
+    services/toolsAPI.js      #   fetches data from the backend API
+    index.js                  #   renders the home grid
+    detail.js                 #   renders a single tool
+
+server/                       # BACKEND — Express + Postgres
+  server.js                   #   sets up the server, static files, routes
+  config/
+    database.js               #   pg pool (Render DATABASE_URL + SSL, or local PG*)
+    data.js                   #   seed data (categories + tools)
+    reset.js                  #   drops/creates/seeds tables → npm run db:reset
+  routes/
+    toolsRouter.js            #   JSON API: GET /api/tools, GET /api/tools/:slug
 ```
+
+### Connecting to Render PostgreSQL
+
+1. In the [Render dashboard](https://dashboard.render.com): **New + → PostgreSQL**, pick the Free tier, **Create Database**, wait for **Available**.
+2. Copy the **External Database URL** from the database's **Connections** section.
+3. In `.env`, set `DATABASE_URL=<that URL>` and `PGSSL=true` (Render requires SSL).
 
 ### Running locally
 
 ```bash
-# 1. Install Postgres (macOS): brew install postgresql@16 && brew services start postgresql@16
-# 2. Create the database:      createdb listicle
-# 3. Configure connection:     cp .env.example .env   (then edit values)
+cp .env.example .env   # then paste your Render DATABASE_URL + set PGSSL=true
 npm install
-npm run db:reset   # create tables + seed data
-npm start          # or: npm run dev  (auto-restarts on file changes)
+npm run db:reset       # create tables + seed data on Render
+npm start              # or: npm run dev  (auto-restarts on file changes)
 ```
 
 Then open <http://localhost:3000>.
 
-| Route              | Description                            |
-| ------------------ | -------------------------------------- |
-| `GET /`            | Home page — grid of all tools (DB query) |
-| `GET /tools/:slug` | Detail page for one tool (DB query)    |
-| `*`                | Custom 404 page                        |
+| Endpoint                | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| `GET /`                 | Home page (HTML shell; JS fetches the list)       |
+| `GET /tools/:slug`      | Detail page (HTML shell; JS fetches the tool)     |
+| `GET /api/tools`        | JSON — all tools (queries Render Postgres)        |
+| `GET /api/tools/:slug`  | JSON — one tool, or 404                            |
+| `*`                     | Custom 404 page                                   |
 
 ## License
 

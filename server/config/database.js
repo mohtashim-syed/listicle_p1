@@ -1,6 +1,6 @@
 // Centralized Postgres connection pool.
-// Reads from .env so the same code works against a local DB or a hosted one
-// (Railway/Neon/Supabase) — just change the environment variables.
+// Works against a hosted Render database (via DATABASE_URL + SSL) or a local
+// Postgres instance (via the individual PG* variables) — just change .env.
 
 import pg from "pg";
 import dotenv from "dotenv";
@@ -9,12 +9,13 @@ dotenv.config();
 
 const { Pool } = pg;
 
-// A full DATABASE_URL (hosted providers) takes precedence over PG* vars.
+// A full DATABASE_URL (Render / other hosted providers) takes precedence.
 const useConnectionString = Boolean(process.env.DATABASE_URL);
 
 const config = useConnectionString
   ? {
       connectionString: process.env.DATABASE_URL,
+      // Render requires SSL. Set PGSSL=false in .env to disable (e.g. local URL).
       ssl:
         process.env.PGSSL === "false"
           ? false
