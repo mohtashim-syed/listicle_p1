@@ -111,13 +111,23 @@ npm start              # or: npm run dev  (auto-restarts on file changes)
 
 Then open <http://localhost:3000>.
 
-| Endpoint                | Description                                       |
-| ----------------------- | ------------------------------------------------- |
-| `GET /`                 | Home page (HTML shell; JS fetches the list)       |
-| `GET /tools/:slug`      | Detail page (HTML shell; JS fetches the tool)     |
-| `GET /api/tools`        | JSON — all tools (queries Render Postgres)        |
-| `GET /api/tools/:slug`  | JSON — one tool, or 404                            |
-| `*`                     | Custom 404 page                                   |
+| Endpoint                  | Description                                       |
+| ------------------------- | ------------------------------------------------- |
+| `GET /`                   | Home page (HTML shell; JS fetches the list)       |
+| `GET /tools/:slug`        | Detail page (HTML shell; JS fetches the tool)     |
+| `GET /api/tools`          | JSON — all tools (queries Render Postgres)        |
+| `GET /api/tools/:slug`    | JSON — one tool, or 404                           |
+| `POST /api/tools`         | Create a tool (used by the "Add a tool" form)     |
+| `DELETE /api/tools/:slug` | Delete a tool (used by the Delete buttons)        |
+| `*`                       | Custom 404 page                                   |
+
+### Managing items from the UI
+
+The home page supports the full lifecycle without touching SQL:
+
+- **Search** — the search box filters the list live in the browser (by name, category, description, or platform).
+- **Add** — the "Add a tool" form `POST`s to the API; the slug is generated from the name and the category is matched (or created) automatically.
+- **Delete** — every card (and the detail page) has a Delete button that `DELETE`s the tool after a confirmation prompt.
 
 ## License
 

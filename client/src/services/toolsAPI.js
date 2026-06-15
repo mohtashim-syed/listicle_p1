@@ -24,3 +24,29 @@ export async function fetchToolBySlug(slug) {
   }
   return res.json();
 }
+
+// Create a new tool. `data` is an object with name, category, price, etc.
+// Returns the created tool, or throws with the server's error message.
+export async function createTool(data) {
+  const res = await fetch(BASE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Failed to add tool (HTTP ${res.status})`);
+  }
+  return res.json();
+}
+
+// Delete a tool by slug.
+export async function deleteTool(slug) {
+  const res = await fetch(`${BASE_URL}/${encodeURIComponent(slug)}`, {
+    method: "DELETE",
+  });
+  if (!res.ok && res.status !== 204) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Failed to delete tool (HTTP ${res.status})`);
+  }
+}

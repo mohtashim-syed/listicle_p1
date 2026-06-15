@@ -31,8 +31,60 @@
         <p>A hand-picked collection of tools every developer should have in their kit. Click any card for full details.</p>
       </hgroup>
 
+      <!-- Search box: filters the list live (client-side). -->
+      <input
+        type="search"
+        id="search"
+        placeholder="🔍 Search tools by name, category, or description…"
+      />
+
+      <!-- Add-a-tool form (collapsible). Submits to POST /api/tools. -->
+      <details class="add-panel">
+        <summary>➕ Add a tool</summary>
+        <form id="add-form">
+          <div class="grid">
+            <label>
+              Name *
+              <input type="text" name="name" required placeholder="e.g. Insomnia" />
+            </label>
+            <label>
+              Category *
+              <input type="text" name="category" required list="category-options" placeholder="e.g. API Testing" />
+              <datalist id="category-options"></datalist>
+            </label>
+          </div>
+          <div class="grid">
+            <label>
+              Price
+              <input type="text" name="price" placeholder="e.g. Free / Paid" />
+            </label>
+            <label>
+              Platform
+              <input type="text" name="platform" placeholder="e.g. Windows, macOS, Linux" />
+            </label>
+          </div>
+          <div class="grid">
+            <label>
+              Image URL
+              <input type="url" name="image" placeholder="https://…" />
+            </label>
+            <label>
+              Website
+              <input type="url" name="link" placeholder="https://…" />
+            </label>
+          </div>
+          <label>
+            Description
+            <textarea name="description" rows="2" placeholder="What is it?"></textarea>
+          </label>
+          <p id="form-error" class="form-error" hidden></p>
+          <button type="submit">Add Tool</button>
+        </form>
+      </details>
+
       <!-- Populated by src/index.js from the /api/tools endpoint. -->
       <section id="tool-grid" class="tool-grid" aria-busy="true"></section>
+      <p id="empty-msg" hidden>No tools match your search.</p>
     </main>
 
     <footer class="container">

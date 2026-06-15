@@ -11,6 +11,9 @@ const CLIENT_DIR = path.join(__dirname, "..", "client");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Parse JSON request bodies (used by POST /api/tools).
+app.use(express.json());
+
 // Serve the static frontend (HTML, CSS, JS, assets) from the client folder.
 app.use(express.static(CLIENT_DIR));
 

@@ -4,6 +4,25 @@
   text-decoration: none;
 }
 
+/* Search + add controls */
+#search {
+  margin-bottom: 1rem;
+}
+
+.add-panel {
+  margin-bottom: 1.5rem;
+}
+
+.add-panel summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form-error {
+  color: var(--pico-del-color, #d33);
+  font-weight: 600;
+}
+
 /* Home page grid of tool cards */
 .tool-grid {
   display: grid;
@@ -17,12 +36,26 @@
   padding: 0;
   margin: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .tool-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.card-footer {
+  margin-top: auto;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.card-footer .delete-btn {
+  margin: 0;
+  width: 100%;
+  padding: 0.4rem;
+  font-size: 0.85rem;
 }
 
 .card-link {
@@ -84,6 +117,19 @@
 
 .detail h1 {
   margin: 0.5rem 0 1rem;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.detail-actions a,
+.detail-actions button {
+  margin: 0;
+  width: auto;
 }
 
 @media (max-width: 600px) {

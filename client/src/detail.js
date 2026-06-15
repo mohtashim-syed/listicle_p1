@@ -1,7 +1,7 @@
 // Detail page: read the slug from the URL (/tools/:slug), fetch that one tool
 // from the API, and render all of its database fields.
 
-import { fetchToolBySlug } from "./services/toolsAPI.js";
+import { fetchToolBySlug, deleteTool } from "./services/toolsAPI.js";
 
 function esc(str = "") {
   return String(str)
@@ -35,7 +35,10 @@ function detailMarkup(tool) {
           <span class="badge">${esc(tool.category)}</span>
           <h1>${esc(tool.name)}</h1>
           <p>${esc(tool.description)}</p>
-          <a href="${esc(tool.link)}" role="button" target="_blank" rel="noopener noreferrer">Visit Website &nearr;</a>
+          <div class="detail-actions">
+            <a href="${esc(tool.link)}" role="button" target="_blank" rel="noopener noreferrer">Visit Website &nearr;</a>
+            <button id="delete-btn" class="outline secondary" data-slug="${esc(tool.slug)}" data-name="${esc(tool.name)}">🗑 Delete</button>
+          </div>
         </div>
       </div>
       <table>
@@ -72,6 +75,21 @@ async function render() {
     }
     document.title = `${tool.name} · Dev Tools`;
     container.innerHTML = detailMarkup(tool);
+
+    // Wire up the delete button: confirm, delete, then go home.
+    const deleteBtn = document.getElementById("delete-btn");
+    deleteBtn.addEventListener("click", async () => {
+      const { slug: s, name } = deleteBtn.dataset;
+      if (!confirm(`Delete "${name}"? This can't be undone.`)) return;
+      deleteBtn.setAttribute("aria-busy", "true");
+      try {
+        await deleteTool(s);
+        window.location.href = "/";
+      } catch (err) {
+        alert(`Couldn't delete: ${err.message}`);
+        deleteBtn.removeAttribute("aria-busy");
+      }
+    });
   } catch (err) {
     container.innerHTML = `<p>⚠️ Couldn't load this tool. ${esc(err.message)}</p>`;
   } finally {
