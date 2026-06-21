@@ -38,6 +38,10 @@
         placeholder="🔍 Search tools by name, category, or description…"
       />
 
+      <!-- Category filter: one chip per category, loaded from /api/categories.
+           Clicking a chip shows only that category's tools. -->
+      <nav id="category-filter" class="category-filter" aria-label="Filter tools by category"></nav>
+
       <!-- Add-a-tool form (collapsible). Submits to POST /api/tools. -->
       <details class="add-panel">
         <summary>➕ Add a tool</summary>

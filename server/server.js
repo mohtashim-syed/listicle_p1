@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import toolsRouter from "./routes/toolsRouter.js";
+import categoriesRouter from "./routes/categoriesRouter.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // The frontend lives in ../client (sibling of the server folder).
@@ -19,6 +20,7 @@ app.use(express.static(CLIENT_DIR));
 
 // JSON API — the frontend fetches its data from here.
 app.use("/api/tools", toolsRouter);
+app.use("/api/categories", categoriesRouter);
 
 // Home page.
 app.get("/", (req, res) => {

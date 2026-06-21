@@ -3,6 +3,7 @@
 
 import express from "express";
 import { pool } from "../config/database.js";
+import { getTools } from "../controllers/toolsController.js";
 
 const router = express.Router();
 
@@ -25,17 +26,8 @@ const SELECT_WITH_CATEGORY = `
   JOIN categories c ON c.id = t.category_id
 `;
 
-// GET /api/tools — all tools.
-router.get("/", async (req, res, next) => {
-  try {
-    const { rows } = await pool.query(
-      `${SELECT_WITH_CATEGORY} ORDER BY t.id ASC`
-    );
-    res.json(rows);
-  } catch (err) {
-    next(err);
-  }
-});
+// GET /api/tools — all tools. Handled by the controller.
+router.get("/", getTools);
 
 // GET /api/tools/:slug — a single tool, or 404 JSON if not found.
 router.get("/:slug", async (req, res, next) => {

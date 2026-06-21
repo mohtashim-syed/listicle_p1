@@ -2,32 +2,32 @@
 // Works against a hosted Render database (via DATABASE_URL + SSL) or a local
 // Postgres instance (via the individual PG* variables) — just change .env.
 
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import pg from "pg";
 import dotenv from "dotenv";
 
-dotenv.config();
+// Load server/.env regardless of where node is started from. npm scripts run
+// node from the repo root, so a bare dotenv.config() would miss server/.env.
+// __dirname here is server/config, so ../.env resolves to server/.env.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const { Pool } = pg;
 
 // A full DATABASE_URL (Render / other hosted providers) takes precedence.
 const useConnectionString = Boolean(process.env.DATABASE_URL);
 
-const config = useConnectionString
-  ? {
-      connectionString: process.env.DATABASE_URL,
-      // Render requires SSL. Set PGSSL=false in .env to disable (e.g. local URL).
-      ssl:
-        process.env.PGSSL === "false"
-          ? false
-          : { rejectUnauthorized: false },
+const config = {
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    database: process.env.PGDATABASE,
+    ssl: {
+      rejectUnauthorized: false
     }
-  : {
-      host: process.env.PGHOST || "localhost",
-      port: Number(process.env.PGPORT) || 5432,
-      user: process.env.PGUSER,
-      password: process.env.PGPASSWORD || undefined,
-      database: process.env.PGDATABASE,
-      ssl: process.env.PGSSL === "true" ? { rejectUnauthorized: false } : false,
-    };
+}
 
-export const pool = new Pool(config);
+export const pool = new pg.Pool(config)
