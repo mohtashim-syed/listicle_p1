@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Community · Events by Location</title>
+    <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/src/css/style.css" />
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <ul>
+          <li>
+            <a href="/" class="brand"><strong>🛠️ Dev Tools &amp; Resources</strong></a>
+          </li>
+        </ul>
+        <ul>
+          <li><a href="/">Dev Tools</a></li>
+          <li><a href="/community" aria-current="page">Community</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <hgroup>
+        <h1>Dev Community</h1>
+        <p>Pick a spot around the city to see what's happening there — workshops, meetups, hackathons, and more. Tap any location to view its events.</p>
+      </hgroup>
+
+      <!-- Visual location picker: image cards, populated by src/community.js
+           from the /api/locations endpoint. Clicking a card opens that
+           location's detail page. -->
+      <section id="location-grid" class="location-grid" aria-busy="true"></section>
+      <p id="locations-error" hidden></p>
+    </main>
+
+    <footer class="container">
+      <small>Built with Express &amp; Pico.css · Data served live from a Render PostgreSQL database.</small>
+    </footer>
+
+    <script type="module" src="/src/community.js"></script>
+  </body>
+</html>

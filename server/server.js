@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import toolsRouter from "./routes/toolsRouter.js";
 import categoriesRouter from "./routes/categoriesRouter.js";
+import locationsRouter from "./routes/locationsRouter.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // The frontend lives in ../client (sibling of the server folder).
@@ -21,6 +22,7 @@ app.use(express.static(CLIENT_DIR));
 // JSON API — the frontend fetches its data from here.
 app.use("/api/tools", toolsRouter);
 app.use("/api/categories", categoriesRouter);
+app.use("/api/locations", locationsRouter);
 
 // Home page.
 app.get("/", (req, res) => {
@@ -31,6 +33,17 @@ app.get("/", (req, res) => {
 // The client reads the slug from the URL and fetches /api/tools/:slug.
 app.get("/tools/:slug", (req, res) => {
   res.sendFile(path.join(CLIENT_DIR, "detail.html"));
+});
+
+// Community tab — the visual location picker.
+app.get("/community", (req, res) => {
+  res.sendFile(path.join(CLIENT_DIR, "community.html"));
+});
+
+// Location detail — one unique URL per location, e.g. /locations/tech-hub-downtown.
+// The client reads the slug from the URL and fetches that location + its events.
+app.get("/locations/:slug", (req, res) => {
+  res.sendFile(path.join(CLIENT_DIR, "location.html"));
 });
 
 // Catch-all 404 for any route that didn't match above.
